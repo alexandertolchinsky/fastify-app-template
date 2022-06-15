@@ -1,0 +1,24 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: add apt key
+      ansible.builtin.apt_key:
+        url: https://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0x1655A0AB68576280
+        id: 68576280
+    - name: add apt repository
+      ansible.builtin.apt_repository:
+        repo: deb https://deb.nodesource.com/node_16.x focal main
+        filename: nodesource
+    - name: install NodeJS
+      ansible.builtin.apt:
+        name: nodejs
+        update_cache: true
+    - name: install make
+      ansible.builtin.apt:
+        name: make
+    - name: install npm packages
+      ansible.builtin.command:
+        cmd: 'make setup'
+        chdir: /vagrant
+        creates: node_modules
+      become: false
